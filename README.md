@@ -1,7 +1,9 @@
 # Veltrix Digital Wallet: Advanced Database Systems Portfolio
 
 **Course:** MIT 8103 Advanced Database Systems, MIVA Open University
+
 **Session:** 2026/2027 First Semester
+
 **Student:** Faridat Adedunni Adewole (Matric number: 2026/A/MIT/0409)
 
 ## Case Study: Veltrix Digital Wallet
