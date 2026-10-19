@@ -13,7 +13,7 @@ To make performance differences measurable, `01_generate_data.sql` generated 10,
 1. Ran four queries with `EXPLAIN ANALYZE` before adding any indexes (`02_queries_before_indexes.sql`).
 2. Created three indexes (`03_create_indexes.sql`) and ran `ANALYZE` to refresh table statistics.
 3. Re-ran the same queries and compared execution plans and times.
-4. Each query was run several times, and the figures below come from the uploaded screenshots.
+4. Each query was run several times; the figures below come from the uploaded screenshots.
 
 ## Indexes created
 
@@ -25,26 +25,26 @@ To make performance differences measurable, `01_generate_data.sql` generated 10,
 
 ## Results
 
-| Query | Before | After | Plan change |
-|---|---|---|---|
-| 1. Wallet statement | __ ms | 0.068 ms | Parallel Seq Scan → Bitmap Index Scan |
-| 2. Failed transactions (30 days) | __ ms | 6.954 ms | Parallel Seq Scan → Bitmap Index Scan on partial index |
-| 3. Top 10 senders (90 days) | __ ms | 136.050 ms | No change: Seq Scan kept |
-| 4. Customer lookup by email | 3.852 ms | Not re-run | Already used the automatic UNIQUE index |
+| Query | Before | After | Improvement | Plan change |
+|---|---|---|---|---|
+| 1. Wallet statement | 80.021 ms | 0.068 ms | About 1,177x faster | Parallel Seq Scan → Bitmap Index Scan |
+| 2. Failed transactions (30 days) | 90.107 ms | 6.954 ms | About 13x faster | Parallel Seq Scan → Bitmap Index Scan on partial index |
+| 3. Top 10 senders (90 days) | 130.091 ms | 136.050 ms | No meaningful change | Seq Scan kept |
+| 4. Customer lookup by email | 3.852 ms | Not re-run | Already indexed | Uses automatic UNIQUE index |
 
 ## Analysis
 
 **Query 1** improved the most. Before indexing, PostgreSQL read all 200,000 transactions to find just 19 belonging to wallet 500. With the composite index, it went directly to those 19 rows (Heap Blocks: exact=19).
 
-**Query 2** also improved significantly. The plan's Index Cond only checks `created_at`, because the partial index contains failed transactions only, so status does not need to be re-checked during the index search. The gain is smaller than Query 1 because about 2,350 rows are returned from 1,341 different table blocks, which is more real work. The row count also dropped from 2,553 to 2,353 between runs, because the 30-day window moved forward and older failed transactions fell outside it.
+**Query 2** also improved significantly. The plan's Index Cond only checks `created_at`, because the partial index contains failed transactions only, so status does not need to be checked during the index search. The gain is smaller than Query 1 because about 2,350 rows are returned from 1,341 different table blocks, which is more real work. The row count also dropped from 2,553 to 2,353 between runs, because the 30-day window moved forward and older failed transactions fell outside it.
 
-**Query 3** did not improve, and the optimiser was right. The query keeps about 30,000 of 200,000 transactions (Rows Removed by Filter: 169,171) and needs every customer's wallet. When a query needs a large fraction of a table, reading it sequentially is faster than jumping through an index thousands of times. PostgreSQL's cost-based optimiser used the refreshed statistics to make this choice.
+**Query 3** did not improve, and the optimiser was right. The query keeps about 30,000 of 200,000 transactions (Rows Removed by Filter: 169,171) and needs every customer's wallet. When a query needs a large fraction of a table, reading it sequentially is faster than jumping through an index thousands of times. PostgreSQL's cost-based optimiser used the refreshed statistics to make this choice. The small difference between 130 ms and 136 ms is normal run-to-run variation.
 
 **Query 4** shows that PostgreSQL automatically creates indexes for primary keys and UNIQUE constraints (here `customers_email_key`), but not for foreign keys.
 
 ## Trade-offs of indexing
 
-Indexes use extra disk space and slow down INSERT and UPDATE operations slightly, because each index must be updated as well. For Veltrix, the read speed-up on statements and support queries justifies this cost, but indexes should only be created for columns that important queries actually filter, join or sort on.
+Indexes use extra disk space and slow down INSERT and UPDATE operations slightly, because each index must also be updated. For Veltrix, the read speed-up on statements and support queries justifies this cost, but indexes should only be created for columns that important queries actually filter, join or sort on.
 
 ## Lessons learned
 
