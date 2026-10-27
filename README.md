@@ -21,9 +21,9 @@
 | Portfolio | Activity | Status |
 |---|---|---|
 | 1 | Database Design and Modelling | Complete |
-| 2 | Query Processing and Optimisation | In progress |
-| 3 | Transactions and Concurrency | Not started |
-| 4 | NoSQL and Advanced Data Models | Not started |
+| 2 | Query Processing and Optimisation | Complete |
+| 3 | Transactions and Concurrency | Complete |
+| 4 | NoSQL and Advanced Data Models | In progress |
 | 5 | Distributed and Cloud Database Exercise | Not started |
 
 ## Tools Used
