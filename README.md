@@ -23,8 +23,8 @@
 | 1 | Database Design and Modelling | Complete |
 | 2 | Query Processing and Optimisation | Complete |
 | 3 | Transactions and Concurrency | Complete |
-| 4 | NoSQL and Advanced Data Models | In progress |
-| 5 | Distributed and Cloud Database Exercise | Not started |
+| 4 | NoSQL and Advanced Data Models | Complete |
+| 5 | Distributed and Cloud Database Exercise | In progress |
 
 ## Tools Used
 
