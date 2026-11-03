@@ -28,4 +28,4 @@
 
 ## Tools Used
 
-PostgreSQL 17, pgAdmin 4, dbdiagram.io, GitHub
+PostgreSQL 17, pgAdmin 4, dbdiagram.io, Neo4j AuraDB, Neon, GitHub
