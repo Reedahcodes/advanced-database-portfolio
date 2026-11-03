@@ -24,7 +24,7 @@
 | 2 | Query Processing and Optimisation | Complete |
 | 3 | Transactions and Concurrency | Complete |
 | 4 | NoSQL and Advanced Data Models | Complete |
-| 5 | Distributed and Cloud Database Exercise | In progress |
+| 5 | Distributed and Cloud Database Exercise | Complete |
 
 ## Tools Used
 
